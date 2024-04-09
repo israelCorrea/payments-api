@@ -18,11 +18,15 @@ Este projeto é uma API de pagamentos construída em Java com SDK 17, utilizando
 Foram criados testes unitários para garantir a qualidade do código. Para executar os testes, utilize o comando `mvn test`.
 
 ## Endpoints
-- GET    `/api/pagamentos`: Retorna todos os pagamentos
-- GET    `/api/pagamentos/{id}`: Retorna um pagamento específico pelo ID
+- POST   `/api/integrated_systems`: Cria um novo Sistema Integrado
 - POST   `/api/pagamentos`: Cria um novo pagamento
+- GET    `/api/pagamentos`: Retorna todos os pagamentos
+- GET    `/api/pagamentos?statusPayment=A`: Retorna os pagamentos de acordo com o parametro passado para statusPayments onde que A pode ser TODOS, AGENDADO ou EFETUADO
+- GET    `/api/pagamentos/{id}`: Retorna um pagamento específico pelo ID
 - DELETE `/api/pagamentos/{id}`: Deleta um pagamento específico pelo ID
 - PUT    `/api/pagamentos/{id}`: Edita um pagamento específico pelo ID
+- PATCH  `/api/pagamentos/{id}`: Edita parcialmente um pagamento específico pelo ID
+- GET    `/api/systems_notification/{id}`: Fornece informações de INCLUSAO, ALTERACAO ou EXCLUSAO de pagamentos por Sistema Integrado
 
 ## Documentação da API
 A documentação da API pode ser acessada em `http://localhost:8080/swagger-ui.html`

@@ -1,8 +1,12 @@
 package br.com.bank.payments.service;
 
 import br.com.bank.payments.dto.PaymentRecordDto;
+import br.com.bank.payments.entity.IntegratedSystems;
 import br.com.bank.payments.entity.Payment;
+import br.com.bank.payments.entity.SystemsNotification;
+import br.com.bank.payments.repository.IntegratedSystemsRepository;
 import br.com.bank.payments.repository.PaymentRepository;
+import br.com.bank.payments.repository.SystemsNotificationRepository;
 import br.com.bank.payments.type.StatusPayment;
 import br.com.bank.payments.type.TipoChavePix;
 import br.com.bank.payments.type.TipoRecorrencia;
@@ -14,12 +18,20 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PaymentService {
 
     @Autowired
     PaymentRepository paymentRepository;
+
+    @Autowired
+    IntegratedSystemsRepository integratedSystemsRepository;
+
+    @Autowired
+    SystemsNotificationRepository systemsNotificationRepository;
 
     public Payment createPayment(PaymentRecordDto paymentRecordDto) throws Exception {
         var payment = new Payment();
@@ -38,7 +50,23 @@ public class PaymentService {
         payment.setDestinoTipoChavePix(defineTipoChavePix(payment.getDestinoChavePix()));
         payment.setObservacaoPagamento(defineObservacaoPagamento(payment));
 
-        return paymentRepository.save(payment);
+        payment = paymentRepository.save(payment);
+
+        createSystemsNotification(payment.getIdPayment());
+
+        return payment;
+    }
+
+    private void createSystemsNotification(UUID idPayment) {
+        List<IntegratedSystems> listIntegratedSystems = integratedSystemsRepository.findAllByIntegrated(true);
+        for(var integratedSystems : listIntegratedSystems){
+            var systemsNotification = new SystemsNotification();
+            systemsNotification.setSystem(integratedSystems.getIdIntegratedSistems());
+            systemsNotification.setNotified(false);
+            systemsNotification.setDateTime(LocalDateTime.now());
+            systemsNotification.setPayment(idPayment);
+            systemsNotificationRepository.save(systemsNotification);
+        }
     }
 
     public void deleteLogicPayment(Payment payment) {
