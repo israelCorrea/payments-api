@@ -1,9 +1,13 @@
 package br.com.bank.payments.service;
 
 import br.com.bank.payments.dto.PaymentRecordDto;
+import br.com.bank.payments.entity.IntegratedSystems;
 import br.com.bank.payments.entity.Payment;
+import br.com.bank.payments.repository.IntegratedSystemsRepository;
 import br.com.bank.payments.repository.PaymentRepository;
+import br.com.bank.payments.repository.SystemsNotificationRepository;
 import br.com.bank.payments.type.StatusPayment;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -13,6 +17,8 @@ import org.mockito.MockitoAnnotations;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -21,6 +27,12 @@ class PaymentServiceTest {
 
     @Mock
     private PaymentRepository paymentRepository;
+
+    @Mock
+    private IntegratedSystemsRepository integratedSystemsRepository;
+
+    @Mock
+    private SystemsNotificationRepository systemsNotificationRepository;
 
     @InjectMocks
     private PaymentService paymentService;
@@ -36,6 +48,10 @@ class PaymentServiceTest {
         var paymentRecordDto = new PaymentRecordDto("01/05/2024", "email@email.com", new BigDecimal("123.45"), "desc pag", "Mensal", "31/12/2024");
         var payment = new Payment();
         when(paymentRepository.save(any())).thenReturn(payment);
+        var integratedSystem = new IntegratedSystems();
+        var listIntegratedSystem = Lists.newArrayList(integratedSystem);
+        listIntegratedSystem.add(integratedSystem);
+        when(integratedSystemsRepository.findAllByIntegrated(true)).thenReturn(listIntegratedSystem);
         var createdPayment = paymentService.createPayment(paymentRecordDto);
         assertNotNull(createdPayment);
     }

@@ -4,6 +4,7 @@ import br.com.bank.payments.dto.PaymentRecordDto;
 import br.com.bank.payments.entity.Payment;
 import br.com.bank.payments.repository.PaymentRepository;
 import br.com.bank.payments.service.PaymentService;
+import br.com.bank.payments.type.StatusPayment;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -33,8 +34,14 @@ public class PaymentController {
     }
 
     @GetMapping("/payments")
-    public ResponseEntity<List<Payment>> getAllPayments(){
-        var paymentsList = paymentRepository.findAll();
+    public ResponseEntity<List<Payment>> getPayments(@RequestParam(value="statusPayment", defaultValue = "TODOS") StatusPayment statusPayment){
+        List<Payment> paymentsList = new ArrayList<>();
+        if(StatusPayment.EFETUADO.equals(statusPayment) || StatusPayment.AGENDADO.equals(statusPayment)){
+            paymentsList = paymentRepository.findByStatusPayment(statusPayment);
+        }
+        else if (StatusPayment.TODOS.equals(statusPayment)) {
+            paymentsList = paymentRepository.findAll();
+        }
         if(!paymentsList.isEmpty()) {
             for(var payment : paymentsList) {
                 var id = payment.getIdPayment();
@@ -50,7 +57,7 @@ public class PaymentController {
         if(paymentO.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Payment not found.");
         }
-        paymentO.get().add(linkTo(methodOn(PaymentController.class).getAllPayments()).withRel("Payments List"));
+        paymentO.get().add(linkTo(methodOn(PaymentController.class).getPayments(StatusPayment.TODOS)).withRel("Payments List"));
         return ResponseEntity.status(HttpStatus.OK).body(paymentO.get());
     }
 
@@ -67,6 +74,18 @@ public class PaymentController {
     @PutMapping("/payments/{id}")
     public ResponseEntity<Object> updatePayment(@PathVariable(value="id") UUID id,
                                                 @RequestBody @Valid PaymentRecordDto paymentRecordDto) {
+        var paymentO = paymentRepository.findById(id);
+        if(paymentO.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Payment not found.");
+        }
+        var payment = paymentO.get();
+        BeanUtils.copyProperties(paymentRecordDto, payment);
+        return ResponseEntity.status(HttpStatus.OK).body(paymentRepository.save(payment));
+    }
+
+    @PatchMapping("/payments/{id}")
+    public ResponseEntity<Object> patchUpdatePayment(@PathVariable(value="id") UUID id,
+                                                @RequestBody PaymentRecordDto paymentRecordDto) {
         var paymentO = paymentRepository.findById(id);
         if(paymentO.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Payment not found.");
