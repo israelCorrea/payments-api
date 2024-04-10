@@ -47,7 +47,10 @@ public class PaymentController {
         else if (StatusPayment.TODOS.equals(statusPayment)) {
             paymentsList = paymentRepository.findAll();
         }
-        if(!paymentsList.isEmpty()) {
+        if(paymentsList.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        else {
             for(var payment : paymentsList) {
                 var id = payment.getIdPayment();
                 payment.add(linkTo(methodOn(PaymentController.class).getOnePayment(id)).withSelfRel());

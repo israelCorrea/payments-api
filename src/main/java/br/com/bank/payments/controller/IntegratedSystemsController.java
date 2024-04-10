@@ -2,12 +2,14 @@ package br.com.bank.payments.controller;
 
 import br.com.bank.payments.dto.IntegratedSystemsDto;
 import br.com.bank.payments.entity.IntegratedSystems;
+import br.com.bank.payments.exception.NegocioException;
 import br.com.bank.payments.repository.IntegratedSystemsRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +28,12 @@ public class IntegratedSystemsController {
     public ResponseEntity<IntegratedSystems> create(@RequestBody @Valid IntegratedSystemsDto integratedSystemsDto) {
         var integratedSystems = new IntegratedSystems();
         BeanUtils.copyProperties(integratedSystemsDto, integratedSystems);
-        return ResponseEntity.status(HttpStatus.CREATED).body(integratedSystemsRepository.save(integratedSystems));
+        try{
+            integratedSystems = integratedSystemsRepository.save(integratedSystems);
+        }
+        catch (DataIntegrityViolationException dataIntegrityViolationException){
+            throw new NegocioException("A sigla " + integratedSystemsDto.sigla() + " já está cadastrada.");
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(integratedSystems);
     }
 }

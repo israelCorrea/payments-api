@@ -30,6 +30,9 @@ public class SystemsNotificationController {
     public ResponseEntity<List<SystemsNotification>> getAllSystemsNotification(@PathVariable(value="system") UUID system){
         var systemsNotificationList = systemsNotificationRepository.findBySystemAndNotified(system, false);
         systemNotificationService.checkNotification(systemsNotificationList);
+        if(systemsNotificationList.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.status(HttpStatus.OK).body(systemsNotificationList);
     }
 }

@@ -4,6 +4,7 @@ import br.com.bank.payments.dto.PaymentRecordDto;
 import br.com.bank.payments.entity.IntegratedSystems;
 import br.com.bank.payments.entity.Payment;
 import br.com.bank.payments.entity.SystemsNotification;
+import br.com.bank.payments.exception.NegocioException;
 import br.com.bank.payments.repository.IntegratedSystemsRepository;
 import br.com.bank.payments.repository.PaymentRepository;
 import br.com.bank.payments.repository.SystemsNotificationRepository;
@@ -82,7 +83,7 @@ public class PaymentService {
             return StatusPayment.AGENDADO;
         }
         else {
-            throw new Exception("A data do pagamento não é valida");
+            throw new NegocioException("A data do pagamento não é valida");
         }
     }
 
@@ -98,7 +99,7 @@ public class PaymentService {
             return TipoChavePix.CPF;
         }
         else{
-            throw new Exception("A chave PIX é inválida");
+            throw new NegocioException("A chave PIX é inválida");
         }
     }
 
