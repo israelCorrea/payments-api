@@ -14,6 +14,7 @@ import br.com.bank.payments.type.TipoRecorrencia;
 import br.com.bank.payments.util.CpfValidate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -58,6 +59,7 @@ public class PaymentService {
         return payment;
     }
 
+    @Async
     private void createSystemsNotification(UUID idPayment) {
         List<IntegratedSystems> listIntegratedSystems = integratedSystemsRepository.findAllByIntegrated(true);
         for(var integratedSystems : listIntegratedSystems){
