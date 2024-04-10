@@ -13,6 +13,7 @@ public class IntegratedSystems extends RepresentationModel<IntegratedSystems> im
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID idIntegratedSistems;
+    @Column(unique = true)
     private String sigla;
     @Column(columnDefinition = "boolean default true")
     private Boolean integrated;

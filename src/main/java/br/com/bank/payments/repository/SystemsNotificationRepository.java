@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface SystemsNotificationRepository extends JpaRepository<SystemsNotification, UUID> {
-    List<SystemsNotification> findBySystem(UUID system);
+    List<SystemsNotification> findBySystemAndNotified(UUID system, boolean notified);
 }
