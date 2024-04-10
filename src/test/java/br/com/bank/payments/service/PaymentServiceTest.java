@@ -45,7 +45,9 @@ class PaymentServiceTest {
     @Test
     void testCreatePayment() throws Exception {
 
-        var paymentRecordDto = new PaymentRecordDto("01/05/2024", "email@email.com", new BigDecimal("123.45"), "desc pag", "Mensal", "31/12/2024");
+        var dataPagamento = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        var dataFinalRecorrencia = LocalDate.now().plusYears(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        var paymentRecordDto = new PaymentRecordDto(dataPagamento, "email@email.com", new BigDecimal("123.45"), "desc pag", "Mensal", dataFinalRecorrencia);
         var payment = new Payment();
         when(paymentRepository.save(any())).thenReturn(payment);
         var integratedSystem = new IntegratedSystems();
@@ -68,7 +70,8 @@ class PaymentServiceTest {
     @Test
     void testCreatePayment_Efetuado() throws Exception {
         var dataPagamento = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        var paymentRecordDto = new PaymentRecordDto(dataPagamento, "email@email.com", new BigDecimal("123.45"), "desc pag", "Mensal", "31/12/2024");
+        var dataFinalRecorrencia = LocalDate.now().plusYears(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        var paymentRecordDto = new PaymentRecordDto(dataPagamento, "email@email.com", new BigDecimal("123.45"), "desc pag", "Mensal", dataFinalRecorrencia);
         Payment payment = new Payment();
         when(paymentRepository.save(any())).thenReturn(payment);
         Payment createdPayment = paymentService.createPayment(paymentRecordDto);
@@ -78,7 +81,9 @@ class PaymentServiceTest {
     @Test
     void testCreatePayment_Agendado() throws Exception {
 
-        var paymentRecordDto = new PaymentRecordDto("01/06/2024", "email@email.com", new BigDecimal("123.45"), "desc pag", "Mensal", "31/12/2024");
+        var dataPagamento = LocalDate.now().plusMonths(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        var dataFinalRecorrencia = LocalDate.now().plusYears(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        var paymentRecordDto = new PaymentRecordDto(dataPagamento, "email@email.com", new BigDecimal("123.45"), "desc pag", "Mensal", dataFinalRecorrencia);
 
         var payment = new Payment();
         when(paymentRepository.save(any())).thenReturn(payment);
@@ -95,7 +100,9 @@ class PaymentServiceTest {
     @Test
     void testCreatePaymentWithRecurrence() throws Exception {
 
-        var paymentRecordDto = new PaymentRecordDto("01/05/2024", "email@email.com", new BigDecimal("123.45"), "desc pag", "Mensal", "31/12/2024");
+        var dataPagamento = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        var dataFinalRecorrencia = LocalDate.now().plusYears(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        var paymentRecordDto = new PaymentRecordDto(dataPagamento, "email@email.com", new BigDecimal("123.45"), "desc pag", "Mensal", dataFinalRecorrencia);
         var payment = new Payment();
         when(paymentRepository.save(any())).thenReturn(payment);
         var createdPayment = paymentService.createPayment(paymentRecordDto);
